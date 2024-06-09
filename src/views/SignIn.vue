@@ -14,14 +14,14 @@ const router = useRouter()
 const email = ref()
 const password = ref()
 
-const signup = async () => {
-    await authStore.auth({ email: email.value, password: password.value }, 'signup')
+const signin = async () => {
+    await authStore.auth({ email: email.value, password: password.value }, 'signin')
     router.push('/cars')
 }
 </script>
 
 <template>
-    <h2>Sign Up</h2>
+    <h2>Sign In</h2>
     <form class="flex flex-column gap-3">
         <Message
             v-if="authStore.error"
@@ -53,10 +53,10 @@ const signup = async () => {
             class="flex flex-column gap-3"
         >
             <Button
-                label="Signup"
-                @click="signup"
+                label="Signin"
+                @click="signin"
             />
-            <span>Are you already registered? <router-link to="/signin">Sign in</router-link></span>
+            <span>Are you not registred yet? <router-link to="/signup">Sign up</router-link></span>
         </div>
     </form>
 </template>

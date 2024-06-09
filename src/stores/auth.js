@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 
-const apiKey = 'AIzaSyDhsr_szBuhFk2NQhj42dVl2Ae8OU4IxnE'
+const apiKey = import.meta.env.VITE_API_KEY_FIREBASE
 
 export const useAuthStore = defineStore('auth', () => {
     const userInfo = ref({
@@ -16,15 +16,16 @@ export const useAuthStore = defineStore('auth', () => {
     const error = ref('')
     const loader = ref(false)
 
-    const signup = async payload => {
+    const auth = async (payload, type) => {
+        const stringUrl = type === 'signup' ? 'signUp' : 'signInWithPassword'
         error.value = ''
         loader.value = true
         try {
-            let response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+            let response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:${stringUrl}?key=${apiKey}`, {
                 ...payload,
                 returnSecureToken: true
-
             });
+            console.log(response.data);
             userInfo.value = {
                 token: 'response.data.idToken',
                 email: 'response.data.email',
@@ -32,7 +33,6 @@ export const useAuthStore = defineStore('auth', () => {
                 refreshToken: 'response.data.refreshToken',
                 expiresIn: 'response.data.expiresIn'
             }
-            loader.value = false
             console.log(response);
         } catch (err) {
             console.log(err.response);
@@ -49,12 +49,15 @@ export const useAuthStore = defineStore('auth', () => {
                 case 'MISSING_PASSWORD':
                     error.value = 'Missing password'
                     break;
+                case 'INVALID_LOGIN_CREDENTIALS':
+                    error.value = 'Invalid login'
+                    break;
                 default:
                     error.value = 'Error'
                     break;
             }
-            loader.value = false
-        }
+            throw error.value
+        } finally { loader.value = false }
     }
-    return { signup, userInfo, error, loader }
+    return { auth, userInfo, error, loader }
 })
