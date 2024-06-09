@@ -1,4 +1,3 @@
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { initializeApp } from "firebase/app";
