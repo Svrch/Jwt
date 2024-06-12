@@ -3,5 +3,5 @@ import Button from 'primevue/button';
 </script>
 
 <template>
-  <Button label="Submit" />
+  <router-link to="/signin"><Button label="Submit"></Button></router-link>
 </template>

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import axios from 'axios'
 
+
 const apiKey = import.meta.env.VITE_API_KEY_FIREBASE
 
 export const useAuthStore = defineStore('auth', () => {
@@ -27,12 +28,17 @@ export const useAuthStore = defineStore('auth', () => {
             });
             console.log(response.data);
             userInfo.value = {
-                token: 'response.data.idToken',
-                email: 'response.data.email',
-                userId: 'response.data.localId',
-                refreshToken: 'response.data.refreshToken',
-                expiresIn: 'response.data.expiresIn'
+                token: response.data.idToken,
+                email: response.data.email,
+                userId: response.data.localId,
+                refreshToken: response.data.refreshToken,
+                expiresIn: response.data.expiresIn
             }
+            localStorage.setItem('userTokens', JSON.stringify({
+                token: userInfo.value.token,
+                refreshToken: userInfo.value.refreshToken,
+                expiresIn: response.data.W
+            }))
             console.log(response);
         } catch (err) {
             console.log(err.response);
