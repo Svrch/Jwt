@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from 'axios'
+import axiosApiInstance from '../api'
 
 
 const apiKey = import.meta.env.VITE_API_KEY_FIREBASE
@@ -11,7 +11,6 @@ export const useAuthStore = defineStore('auth', () => {
         email: '',
         userId: '',
         refreshToken: '',
-        expiresIn: ''
     })
 
     const error = ref('')
@@ -22,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
         error.value = ''
         loader.value = true
         try {
-            let response = await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:${stringUrl}?key=${apiKey}`, {
+            let response = await axiosApiInstance.post(`https://identitytoolkit.googleapis.com/v1/accounts:${stringUrl}?key=${apiKey}`, {
                 ...payload,
                 returnSecureToken: true
             });
@@ -32,12 +31,10 @@ export const useAuthStore = defineStore('auth', () => {
                 email: response.data.email,
                 userId: response.data.localId,
                 refreshToken: response.data.refreshToken,
-                expiresIn: response.data.expiresIn
             }
             localStorage.setItem('userTokens', JSON.stringify({
                 token: userInfo.value.token,
                 refreshToken: userInfo.value.refreshToken,
-                expiresIn: response.data.W
             }))
             console.log(response);
         } catch (err) {
@@ -65,5 +62,14 @@ export const useAuthStore = defineStore('auth', () => {
             throw error.value
         } finally { loader.value = false }
     }
-    return { auth, userInfo, error, loader }
+
+    const logout = () => {
+        userInfo.value = {
+            token: '',
+            email: '',
+            userId: '',
+            refreshToken: '',
+        }
+    }
+    return { auth, userInfo, error, loader, logout }
 })
